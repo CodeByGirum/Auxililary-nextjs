@@ -1,108 +1,238 @@
-import React from 'react';
-import { Play, Clock, MoreHorizontal, BookOpen } from 'lucide-react';
 
-const NotebookCard = ({ title, author, progress, coverColor, lastRead }: any) => {
-    return (
-        <div className="group bg-white dark:bg-[#1f1f1f] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer relative flex flex-col h-[420px]">
-            {/* Cover Image Area */}
-            <div className={`h-[60%] ${coverColor} relative p-6 flex flex-col justify-between text-white`}>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                
-                <div className="relative z-10 flex justify-between items-start">
-                   <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-medium border border-white/10">
-                      Analysis
-                   </span>
-                   <button className="p-2 bg-black/20 hover:bg-black/40 backdrop-blur rounded-full transition-colors">
-                      <MoreHorizontal size={16} className="text-white" />
-                   </button>
-                </div>
+import React, { useState } from 'react';
+import { Search, Filter, Plus, MoreHorizontal, FileText, PieChart, BarChart3, LineChart, Sparkles } from 'lucide-react';
 
-                <div className="relative z-10">
-                    <h3 className="text-2xl font-bold leading-tight mb-1 text-shadow-sm">{title}</h3>
-                    <p className="text-sm text-white/80 font-medium">by {author}</p>
-                </div>
-            </div>
+// --- Types ---
 
-            {/* Content Area */}
-            <div className="flex-1 p-6 flex flex-col justify-between">
-                <div className="space-y-4">
-                   <div className="flex justify-between items-end text-sm">
-                      <span className="font-semibold text-gray-900 dark:text-white">{progress}% Complete</span>
-                      <span className="text-gray-500 dark:text-gray-400 text-xs">{lastRead}</span>
-                   </div>
-                   
-                   {/* Progress Bar */}
-                   <div className="h-1.5 w-full bg-gray-100 dark:bg-[#333] rounded-full overflow-hidden">
-                      <div className="h-full bg-black dark:bg-white rounded-full transition-all duration-1000" style={{ width: `${progress}%` }}></div>
-                   </div>
-
-                   <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mt-4">
-                      <div className="flex items-center gap-1.5">
-                         <Clock size={14} strokeWidth={1.5} />
-                         <span>25 min avg</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                         <BookOpen size={14} strokeWidth={1.5} />
-                         <span>213 pages</span>
-                      </div>
-                   </div>
-                </div>
-
-                <button className="w-full py-3 bg-gray-100 dark:bg-[#2a2a2a] text-gray-900 dark:text-white font-medium rounded-xl mt-4 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-2 group-hover:translate-y-0 translate-y-1">
-                   <span>Resume Reading</span>
-                   <Play size={14} fill="currentColor" />
-                </button>
-            </div>
-        </div>
-    );
+interface Notebook {
+  id: string;
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  category: string;
+  gradient: string;
+  icon?: any;
 }
 
-export const Notebooks = () => {
-  const notebooks = [
-    { 
-        title: "Dune Messiah Analysis", 
-        author: "Frank Herbert Data", 
-        progress: 62, 
-        coverColor: "bg-gradient-to-b from-slate-600 to-slate-800",
-        lastRead: "2 Days Ago"
-    },
-    { 
-        title: "The Threshold of Ash", 
-        author: "Elias K. Wren", 
-        progress: 75, 
-        coverColor: "bg-gradient-to-b from-orange-700 to-red-900",
-        lastRead: "4 hours ago"
-    },
-    { 
-        title: "Neural Networks 101", 
-        author: "Sarah Connor", 
-        progress: 12, 
-        coverColor: "bg-gradient-to-b from-blue-600 to-indigo-900",
-        lastRead: "Just now"
-    },
-  ];
+// --- Mock Data ---
 
+const MOCK_NOTEBOOKS: Notebook[] = [
+  { 
+    id: '1', 
+    title: 'Customer Churn Analysis', 
+    description: 'Deep dive into Q3 churn factors and retention strategies.',
+    author: 'Sarah Connor', 
+    date: 'Oct 24, 2023',
+    category: 'Analysis',
+    gradient: 'bg-gradient-to-br from-[#f472b6] to-[#db2777]', // Pink
+    icon: PieChart
+  },
+  { 
+    id: '2', 
+    title: 'Q3 Financial Report', 
+    description: 'Consolidated revenue streams and expense breakdown.',
+    author: 'Elias K. Wren', 
+    date: 'Nov 10, 2023',
+    category: 'Finance',
+    gradient: 'bg-gradient-to-br from-[#60a5fa] to-[#2563eb]', // Blue
+    icon: BarChart3
+  },
+  { 
+    id: '3', 
+    title: 'User Behavior Study', 
+    description: 'Session heatmap analysis and click-through rate study.',
+    author: 'Frank Herbert', 
+    date: 'Dec 05, 2023',
+    category: 'Research',
+    gradient: 'bg-gradient-to-br from-[#fbbf24] to-[#d97706]', // Amber
+    icon: LineChart
+  },
+  { 
+    id: '4', 
+    title: 'Neural Networks 101', 
+    description: 'Introductory guide to perceptrons and backpropagation.',
+    author: 'Alan Turing', 
+    date: 'Jan 12, 2024',
+    category: 'Education',
+    gradient: 'bg-gradient-to-br from-[#818cf8] to-[#4f46e5]', // Indigo
+    icon: Sparkles
+  },
+  { 
+    id: '5', 
+    title: 'Product Roadmap 2024', 
+    description: 'Timeline for upcoming features and major releases.',
+    author: 'Product Team', 
+    date: 'Feb 02, 2024',
+    category: 'Strategy',
+    gradient: 'bg-gradient-to-br from-[#34d399] to-[#059669]', // Emerald
+    icon: FileText
+  },
+  { 
+    id: '6', 
+    title: 'Competitor Analysis', 
+    description: 'Feature comparison against top 3 market competitors.',
+    author: 'Marketing', 
+    date: 'Feb 15, 2024',
+    category: 'Marketing',
+    gradient: 'bg-gradient-to-br from-[#f87171] to-[#dc2626]', // Red
+    icon: BarChart3
+  },
+];
+
+// --- Components ---
+
+const DocumentIllustration = ({ className }: { className?: string }) => (
+  <div className={`relative w-28 h-36 bg-white rounded-xl shadow-2xl flex flex-col p-4 gap-3 transform transition-transform duration-500 ${className}`}>
+     {/* Header Line */}
+     <div className="w-12 h-1.5 bg-gray-100 rounded-full mb-1" />
+     
+     {/* Content Lines */}
+     <div className="space-y-2 flex-1">
+        <div className="w-full h-px bg-gray-100" />
+        <div className="w-full h-1 bg-gray-50 rounded-full" />
+        <div className="w-5/6 h-1 bg-gray-50 rounded-full" />
+        <div className="w-full h-1 bg-gray-50 rounded-full" />
+        <div className="w-4/5 h-1 bg-gray-50 rounded-full" />
+     </div>
+
+     {/* Footer Elements */}
+     <div className="mt-auto flex gap-2 opacity-50">
+        <div className="w-6 h-6 bg-gray-100 rounded-md" />
+        <div className="w-6 h-6 bg-gray-100 rounded-md" />
+     </div>
+     
+     {/* Fold Corner effect */}
+     <div className="absolute top-0 right-0 w-6 h-6 bg-gradient-to-bl from-gray-200 to-white rounded-bl-lg opacity-50" />
+  </div>
+);
+
+const NotebookCard: React.FC<{ notebook: Notebook }> = ({ notebook }) => {
   return (
-    <div className="px-6 py-10 pb-20 w-full max-w-[1200px] mx-auto">
-      <div className="flex items-center justify-between mb-10">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Notebooks</h1>
-      </div>
+    <div className="group relative w-full aspect-[3.8/5] rounded-[32px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1 select-none bg-white dark:bg-[#1e1e1e] border border-gray-100 dark:border-[#333]">
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {notebooks.map((nb, i) => (
-            <NotebookCard key={i} {...nb} />
-        ))}
-        {/* Add Placeholder for "New" */}
-        <div className="group border-2 border-dashed border-gray-200 dark:border-[#333] rounded-3xl flex flex-col items-center justify-center min-h-[420px] hover:bg-gray-50 dark:hover:bg-[#1f1f1f] transition-colors cursor-pointer">
-             <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors mb-4">
-                 <Plus size={32} strokeWidth={1.5} />
-             </div>
-             <p className="font-medium text-gray-500 dark:text-gray-400">Create New Notebook</p>
-        </div>
+      {/* 1. Gradient Header */}
+      <div className={`h-[55%] ${notebook.gradient} relative overflow-hidden`}>
+         {/* Subtle noise/pattern overlay could go here */}
+         <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors" />
+         
+         {/* 2. Floating Document Illustration */}
+         <div className="absolute inset-0 flex items-center justify-center translate-y-4 perspective-1000">
+            <DocumentIllustration 
+               className="group-hover:scale-105 group-hover:-translate-y-2 group-hover:rotate-1 origin-bottom shadow-xl ring-1 ring-black/5" 
+            />
+         </div>
+      </div>
+
+      {/* 3. Bottom Info Section */}
+      <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-white dark:bg-[#1e1e1e] p-6 flex flex-col justify-between z-10">
+         
+         {/* Top Row: Date & Menu */}
+         <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {notebook.date}
+                </span>
+            </div>
+            <button className="text-gray-400 hover:text-black dark:hover:text-white transition-colors p-1 -mr-2 -mt-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#333]">
+               <MoreHorizontal size={18} />
+            </button>
+         </div>
+
+         {/* Middle: Title & Desc */}
+         <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight mb-2 line-clamp-1">
+                {notebook.title}
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed font-medium">
+                {notebook.description}
+            </p>
+         </div>
+
+         {/* Bottom: Tags/Category */}
+         <div className="flex items-center gap-2 mt-2">
+            <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-[#2a2a2a] text-[10px] font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-[#333]">
+                {notebook.category}
+            </span>
+            {notebook.icon && (
+                 <div className="w-5 h-5 flex items-center justify-center text-gray-400">
+                     <notebook.icon size={14} />
+                 </div>
+            )}
+         </div>
       </div>
     </div>
   );
 };
 
-// Helper component for New Notebook placeholder
-import { Plus } from 'lucide-react';
+export const Notebooks = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filteredNotebooks = MOCK_NOTEBOOKS.filter(nb => 
+    nb.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    nb.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-full bg-white dark:bg-[#212121] transition-colors duration-300">
+        <div className="px-6 md:px-10 py-8 max-w-[1600px] mx-auto">
+        
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div>
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight mb-3">Notebooks</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl">
+                        Explore your data analysis, reports, and research documents.
+                    </p>
+                </div>
+
+                {/* Actions Toolbar */}
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    {/* Search */}
+                    <div className="relative group w-full sm:w-64">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-black dark:group-focus-within:text-white transition-colors" size={18} />
+                        <input 
+                            type="text" 
+                            placeholder="Search notebooks..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-[#2f2f2f] rounded-full text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-black/5 dark:focus:ring-white/10 transition-all"
+                        />
+                    </div>
+
+                    {/* New Notebook Button */}
+                    <button className="flex items-center justify-center gap-2 pl-4 pr-5 py-2.5 bg-black dark:bg-white text-white dark:text-black rounded-full font-medium text-sm hover:opacity-90 active:scale-95 transition-all shadow-lg hover:shadow-xl">
+                        <Plus size={18} />
+                        <span>New Notebook</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Grid */}
+            {filteredNotebooks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {filteredNotebooks.map((nb) => (
+                        <NotebookCard key={nb.id} notebook={nb} />
+                    ))}
+                    
+                    {/* Add New Placeholder */}
+                    <div className="group relative w-full aspect-[3.8/5] rounded-[32px] border-2 border-dashed border-gray-200 dark:border-[#333] flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition-colors">
+                        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-[#333] flex items-center justify-center text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors mb-4">
+                            <Plus size={32} strokeWidth={1.5} />
+                        </div>
+                        <p className="font-medium text-gray-500 dark:text-gray-400">Create New Notebook</p>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-[#2f2f2f] rounded-full flex items-center justify-center mb-4">
+                        <Search size={24} className="opacity-40" />
+                    </div>
+                    <p>No notebooks found matching "{searchQuery}"</p>
+                    <button onClick={() => setSearchQuery('')} className="mt-2 text-sm text-blue-600 hover:underline">Clear search</button>
+                </div>
+            )}
+        </div>
+    </div>
+  );
+};

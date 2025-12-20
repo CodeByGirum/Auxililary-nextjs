@@ -24,6 +24,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+
+    <!-- AlaSQL for client-side SQL analysis -->
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4"></script>
 
     <style>
       body {
@@ -39,28 +43,26 @@
           scrollbar-width: none;  /* Firefox */
       }
 
-      /* Custom Scrollbar for Code Blocks */
+      /* Custom Scrollbar */
       .custom-scrollbar::-webkit-scrollbar {
-        height: 10px;
-        width: 10px;
+        height: 6px;
+        width: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #e2e8f0; /* gray-200 */
-        border-radius: 5px;
-        border: 2px solid transparent;
-        background-clip: content-box;
+        background-color: rgba(0, 0, 0, 0.05); /* Very subtle in light mode */
+        border-radius: 10px;
       }
       .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-        background-color: #404040; /* neutral-700 */
+        background-color: rgba(255, 255, 255, 0.1); /* Subtle in dark mode */
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: #cbd5e1; /* gray-300 */
+        background-color: rgba(0, 0, 0, 0.15);
       }
       .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background-color: #525252; /* neutral-600 */
+        background-color: rgba(255, 255, 255, 0.2);
       }
 
       /* --- Custom PrismJS Theme for Light/Dark Modes --- */

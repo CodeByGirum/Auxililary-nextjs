@@ -1,197 +1,123 @@
+import React, { useState, useRef } from 'react';
+import { Folder, Database, Book, Puzzle, ChevronLeft, ChevronRight, ExternalLink, Globe } from 'lucide-react';
+import { AuxLogo } from './sidebar/AuxLogo';
+import { SidebarItem } from './sidebar/SidebarItem';
+import { SidebarDraggableItem } from './sidebar/SidebarDraggableItem';
+import { SidebarProfile } from './sidebar/SidebarProfile';
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  MessageSquarePlus, Folder, Database, 
-  Book, Puzzle, Globe, ChevronLeft, ChevronRight,
-  MoreHorizontal, ExternalLink, FileText, MessageSquare
-} from 'lucide-react';
-
+interface ChatHistoryItem { id: string; title: string; }
 interface SidebarProps {
   isExpanded: boolean;
   toggleSidebar: () => void;
   onOpenSettings: () => void;
+  onNotificationClick: () => void;
+  currentPath: string;
+  chatHistory: ChatHistoryItem[];
+  onRenameChat: (id: string, title: string) => void;
+  onDeleteChat: (id: string) => void;
+  onReorderChats: (chats: ChatHistoryItem[]) => void;
+  onSelectChat: (id: string) => void;
 }
 
-// Custom Diamond Grid Logo (Small Cluster)
-export const AuxLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="2" width="4" height="4" />
-    <rect x="8" y="2" width="4" height="4" />
-    <rect x="2" y="8" width="4" height="4" />
-    <rect x="8" y="8" width="4" height="4" />
-    <rect x="14" y="2" width="4" height="4" />
-    <rect x="14" y="8" width="4" height="4" />
-    <rect x="2" y="14" width="4" height="4" />
-    <rect x="8" y="14" width="4" height="4" />
-    <rect x="14" y="14" width="4" height="4" />
-  </svg>
-);
+const INITIAL_NOTEBOOKS = [
+  { id: 'n1', title: 'Sentiment Analysis' },
+  { id: 'n2', title: 'Data Analysis for Cost' },
+  { id: 'n3', title: 'Customer Data Insights' },
+  { id: 'n4', title: 'Quarterly Data Clean up' }
+];
 
-const NavItem = ({ 
-  icon: Icon, 
-  to, 
-  active = false,
-  label,
-  isExpanded
-}: any) => {
-  return (
-    <Link
-      to={to}
-      className={`
-        flex items-center gap-4 h-10 transition-colors duration-200 group rounded-none
-        ${active 
-          ? 'bg-gray-200 dark:bg-[#2a2a2a] text-black dark:text-white' 
-          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#212121] hover:text-black dark:hover:text-white'
-        }
-        ${isExpanded ? 'px-6 w-full' : 'w-full justify-center px-0'}
-      `}
-    >
-      <Icon size={18} strokeWidth={1.5} className="flex-shrink-0" />
-      
-      {isExpanded && (
-        <span className="text-sm font-medium whitespace-nowrap">
-          {label}
-        </span>
-      )}
-      
-      {/* Tooltip for collapsed state */}
-      {!isExpanded && (
-        <div className="fixed left-14 z-50 hidden group-hover:block bg-gray-900 dark:bg-white text-white dark:text-black text-xs px-2 py-1 font-medium whitespace-nowrap shadow-sm">
-          {label}
-        </div>
-      )}
-    </Link>
-  );
-};
+const primaryNav = [
+  { icon: Folder, label: 'Projects', path: '/projects' },
+  { icon: Database, label: 'Datasets', path: '/datasets' },
+  { icon: Book, label: 'Notebooks', path: '/notebooks' },
+  { icon: Puzzle, label: 'Integrations', path: '/integrations' },
+];
 
-interface HistoryItemProps {
-  label: string;
-  icon?: any;
-  isExternal?: boolean;
-}
+export const Sidebar = ({ 
+  isExpanded, toggleSidebar, onOpenSettings, onNotificationClick, currentPath,
+  chatHistory, onDeleteChat, onRenameChat, onReorderChats, onSelectChat
+}: SidebarProps) => {
+  const [notebooks, setNotebooks] = useState(INITIAL_NOTEBOOKS);
+  const dragItem = useRef<number | null>(null);
 
-const HistoryItem: React.FC<HistoryItemProps> = ({ label, icon: Icon, isExternal = false }) => (
-  <div className="group flex items-center justify-between px-6 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#212121] hover:text-black dark:hover:text-white cursor-pointer transition-colors rounded-none">
-    <div className="flex items-center gap-3 overflow-hidden">
-      {Icon && <Icon size={14} strokeWidth={1.5} className="flex-shrink-0 opacity-70" />}
-      <span className="truncate">{label}</span>
-    </div>
-    {isExternal ? (
-      <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity" />
-    ) : (
-      <button className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-black dark:hover:text-white transition-opacity">
-        <MoreHorizontal size={14} />
-      </button>
-    )}
-  </div>
-);
+  const handleRename = (type: 'notebooks' | 'chats', id: string, newName: string) => {
+    if (type === 'notebooks') setNotebooks(prev => prev.map(item => item.id === id ? { ...item, title: newName } : item));
+    else onRenameChat(id, newName);
+  };
 
-export const Sidebar = ({ isExpanded, toggleSidebar, onOpenSettings }: SidebarProps) => {
-  const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+  const handleDelete = (type: 'notebooks' | 'chats', id: string) => {
+    if (type === 'notebooks') setNotebooks(prev => prev.filter(item => item.id !== id));
+    else onDeleteChat(id);
+  };
 
-  const primaryNav = [
-    { icon: MessageSquarePlus, label: 'New Chat', path: '/' },
-    { icon: Folder, label: 'Projects', path: '/projects' },
-    { icon: Database, label: 'Datasets', path: '/datasets' },
-    { icon: Book, label: 'Notebooks', path: '/notebooks' },
-    { icon: Puzzle, label: 'Integrations', path: '/integrations' },
-    { icon: Globe, label: 'Published', path: '/published' },
-  ];
+  const handleDragStart = (index: number) => { dragItem.current = index; };
+  
+  const handleDragEnter = (index: number, type: 'notebooks' | 'chats') => {
+    if (dragItem.current === null || dragItem.current === index) return;
+    if (type === 'notebooks') {
+        const list = [...notebooks];
+        const item = list[dragItem.current];
+        list.splice(dragItem.current, 1);
+        list.splice(index, 0, item);
+        dragItem.current = index;
+        setNotebooks(list);
+    } else {
+        const list = [...chatHistory];
+        const item = list[dragItem.current];
+        list.splice(dragItem.current, 1);
+        list.splice(index, 0, item);
+        dragItem.current = index;
+        onReorderChats(list);
+    }
+  };
 
-  const recentNotebooks = [
-    'Sentiment Analysis',
-    'Data Analysis for Cost',
-    'Customer Data Insights',
-    'Quarterly Data Clean up'
-  ];
-
-  const recentChats = [
-    'Sentiment Analysis',
-    'Data Analysis for Cost',
-    'Customer Data Insights',
-    'Quarterly Data Clean up'
-  ];
+  const handleDragEnd = () => { dragItem.current = null; };
 
   return (
-    <aside 
-      className={`
-        h-full bg-[#F9F9F9] dark:bg-[#171717] flex flex-col border-r border-gray-200 dark:border-[#333] z-50 flex-shrink-0 transition-all duration-300 ease-in-out
-        ${isExpanded ? 'w-[280px]' : 'w-[60px]'}
-      `}
-    >
-      
+    <aside className={`h-full bg-[#F9F9F9] dark:bg-[#171717] flex flex-col border-r border-gray-200 dark:border-[#333] z-50 flex-shrink-0 transition-all duration-300 ease-in-out ${isExpanded ? 'w-[280px]' : 'w-[60px]'}`}>
       {/* Header */}
-      <div className={`flex items-center h-16 mb-2 flex-shrink-0 ${isExpanded ? 'px-6 justify-between' : 'justify-center'}`}>
-        <div className="flex items-center gap-3">
-            <div className="text-black dark:text-white">
-                <AuxLogo className="w-5 h-5" />
-            </div>
-        </div>
-        
-        {isExpanded ? (
-             <button 
-                onClick={toggleSidebar}
-                className="text-gray-400 hover:text-black dark:hover:text-white transition-colors"
-            >
-                <ChevronLeft size={18} strokeWidth={1.5} />
-            </button>
-        ) : (
-            <button 
-                onClick={toggleSidebar}
-                className="absolute top-5 text-gray-400 hover:text-black dark:hover:text-white transition-colors"
-            >
-                <ChevronRight size={18} strokeWidth={1.5} />
-            </button>
-        )}
+      <div className={`flex items-center h-14 mb-2 flex-shrink-0 ${isExpanded ? 'px-6 justify-between' : 'justify-center'}`}>
+        <div className="flex items-center gap-3 text-black dark:text-white"><AuxLogo className="w-5 h-5" /></div>
+        <button onClick={toggleSidebar} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+             {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+        </button>
       </div>
 
-      {/* Primary Navigation */}
-      <nav className="flex flex-col gap-1 w-full flex-shrink-0">
+      {/* Navigation */}
+      <nav className="flex flex-col gap-0.5 w-full flex-shrink-0">
         {primaryNav.map((item) => (
-          <NavItem 
-            key={item.path}
-            icon={item.icon} 
-            label={item.label} 
-            to={item.path} 
-            active={isActive(item.path)}
-            isExpanded={isExpanded}
-          />
+          <SidebarItem key={item.path} icon={item.icon} label={item.label} to={item.path} active={currentPath === item.path} isExpanded={isExpanded} />
         ))}
       </nav>
 
-      {/* History Sections (Only visible when expanded) */}
-      {isExpanded && (
-        <div className="flex-1 overflow-y-auto no-scrollbar mt-8 pb-4">
-            
-            {/* Notebooks Section */}
-            <div className="mb-8">
-                <h3 className="text-xs font-bold text-gray-900 dark:text-white px-6 mb-3 uppercase tracking-wide">
-                    Notebooks
-                </h3>
-                <div className="flex flex-col">
-                    <HistoryItem label="Published" icon={Globe} isExternal={true} />
-                    {recentNotebooks.map((item, i) => (
-                        <HistoryItem key={i} label={item} icon={FileText} />
-                    ))}
+      {/* Draggable Sections */}
+      <div className={`flex-1 overflow-y-auto no-scrollbar mt-8 pb-4 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className="mb-6">
+            <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Notebooks</h3>
+            <div className="flex flex-col gap-0.5">
+                <div onClick={() => window.location.hash = '/published'} className="group flex items-center justify-between px-6 py-1 text-[13px] text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#212121] hover:text-black dark:hover:text-white cursor-pointer transition-colors rounded-none">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <Globe size={14} strokeWidth={1.5} className="flex-shrink-0 opacity-70" /> <span className="truncate">Published</span>
+                    </div>
+                    <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity" />
                 </div>
-            </div>
-
-            {/* Chats Section */}
-            <div>
-                <h3 className="text-xs font-bold text-gray-900 dark:text-white px-6 mb-3 uppercase tracking-wide">
-                    Chats
-                </h3>
-                <div className="flex flex-col">
-                    {recentChats.map((item, i) => (
-                        <HistoryItem key={i} label={item} icon={MessageSquare} />
-                    ))}
-                </div>
+                {notebooks.map((item, i) => (
+                    <SidebarDraggableItem key={item.id} id={item.id} index={i} label={item.title} onRename={(id, name) => handleRename('notebooks', id, name)} onDelete={(id) => handleDelete('notebooks', id)} onDragStart={handleDragStart} onDragEnter={(idx) => handleDragEnter(idx, 'notebooks')} onDragEnd={handleDragEnd} />
+                ))}
             </div>
         </div>
-      )}
 
+        <div>
+            <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Recent Chats</h3>
+            <div className="flex flex-col gap-0.5">
+                {chatHistory.map((item, i) => (
+                    <SidebarDraggableItem key={item.id} id={item.id} index={i} label={item.title} onRename={(id, name) => handleRename('chats', id, name)} onDelete={(id) => handleDelete('chats', id)} onDragStart={handleDragStart} onDragEnter={(idx) => handleDragEnter(idx, 'chats')} onDragEnd={handleDragEnd} onClick={() => onSelectChat(item.id)} />
+                ))}
+            </div>
+        </div>
+      </div>
+
+      <SidebarProfile isExpanded={isExpanded} onOpenSettings={onOpenSettings} onNotificationClick={onNotificationClick} />
     </aside>
   );
 };

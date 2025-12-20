@@ -1,18 +1,21 @@
 
+
 import React, { useState } from 'react';
 import { Check, Copy, RefreshCw, ThumbsUp, ThumbsDown, Globe, FileText } from 'lucide-react';
-import { Message } from '../../types/chat';
+import { Message, TableData } from '../../types/chat';
 import { formatTime } from '../../utils/formatHelpers';
 import { formatFileSize } from '../../utils/fileHelpers';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { EmbeddedTable } from './EmbeddedTable';
 
 interface MessageItemProps {
   msg: Message;
   onRerun: (id: string) => void;
   onFeedback: (id: string, type: 'like' | 'dislike') => void;
+  onExpandTable?: (data: TableData, fileName: string) => void;
 }
 
-export const MessageItem: React.FC<MessageItemProps> = ({ msg, onRerun, onFeedback }) => {
+export const MessageItem: React.FC<MessageItemProps> = ({ msg, onRerun, onFeedback, onExpandTable }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [isRerunSuccess, setIsRerunSuccess] = useState(false);
 
@@ -33,28 +36,48 @@ export const MessageItem: React.FC<MessageItemProps> = ({ msg, onRerun, onFeedba
       <div className={`max-w-3xl mx-auto px-4 py-6 flex gap-6 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
         <div className={`${msg.role === 'user' ? 'bg-[#f4f4f4] dark:bg-[#2f2f2f] px-5 py-3.5 rounded-3xl text-gray-900 dark:text-white max-w-[85%]' : 'w-full text-gray-900 dark:text-gray-100'} leading-7`}>
           {msg.role === 'user' && msg.attachments && msg.attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {msg.attachments.map((att, i) => (
-                att.mimeType.startsWith('image/') ? (
-                  <img key={i} src={att.previewUrl} alt="attachment" className="max-w-full h-auto max-h-64 rounded-xl border border-gray-200 dark:border-[#444]" />
-                ) : (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-[#383838] border border-gray-200 dark:border-[#444] max-w-xs w-full shadow-sm">
-                    <div className="p-2.5 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg text-blue-600 dark:text-blue-400">
-                      <FileText size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate text-gray-900 dark:text-gray-100">{att.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{formatFileSize(att.size)}</div>
-                    </div>
+            <div className="flex flex-col gap-2 mb-3">
+              {msg.attachments.map((att, i) => {
+                if (att.tableData) {
+                   return (
+                       <EmbeddedTable 
+                         key={i} 
+                         data={att.tableData} 
+                         fileName={att.name} 
+                         onExpand={() => onExpandTable && onExpandTable(att.tableData!, att.name)} 
+                       />
+                   );
+                }
+                return (
+                  <div key={i} className="flex flex-wrap gap-2">
+                    {att.mimeType.startsWith('image/') ? (
+                      <img src={att.previewUrl} alt="attachment" className="max-w-full h-auto max-h-64 rounded-xl border border-gray-200 dark:border-[#444]" />
+                    ) : (
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-[#383838] border border-gray-200 dark:border-[#444] max-w-xs w-full shadow-sm">
+                        <div className="p-2.5 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg text-blue-600 dark:text-blue-400">
+                          <FileText size={20} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate text-gray-900 dark:text-gray-100">{att.name}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{formatFileSize(att.size)}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )
-              ))}
+                );
+              })}
             </div>
           )}
           
           {msg.role === 'model' ? (
             <>
-              <MarkdownRenderer content={msg.text} />
+              <MarkdownRenderer 
+                content={msg.text} 
+                executionResult={msg.executionResult}
+                executionResults={msg.executionResults}
+                onExpandTable={onExpandTable}
+              />
+              
               {msg.groundingMetadata?.groundingChunks && (
                 <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#333] flex flex-wrap gap-2">
                   {msg.groundingMetadata.groundingChunks.map((chunk: any, i: number) => chunk.web?.uri && (

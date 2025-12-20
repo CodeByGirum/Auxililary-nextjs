@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { RightPanel } from './components/RightPanel';
 import { TopBar } from './components/TopBar';
@@ -14,11 +14,22 @@ import { Datasets } from './pages/Datasets';
 import { Notebooks } from './pages/Notebooks';
 import { Integrations } from './pages/Integrations';
 import { Published } from './pages/Published';
+import { TableData } from './types/chat';
 
-const Layout = ({ children }: React.PropsWithChildren<{}>) => {
+const INITIAL_CHATS = [
+  { id: 'c1', title: 'React Component Gen' },
+  { id: 'c2', title: 'Debug Python Script' },
+  { id: 'c3', title: 'Email Drafts' },
+  { id: 'c4', title: 'SQL Query Help' }
+];
+
+const Layout = ({ children, currentPath, sidebarProps }: any) => {
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Determine if we should show the default TopBar
+  const showTopBar = currentPath !== '/';
 
   return (
     <div className="flex h-screen bg-white dark:bg-[#212121] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-200 overflow-hidden">
@@ -28,13 +39,14 @@ const Layout = ({ children }: React.PropsWithChildren<{}>) => {
         isExpanded={sidebarExpanded} 
         toggleSidebar={() => setSidebarExpanded(!sidebarExpanded)} 
         onOpenSettings={() => setSettingsOpen(true)}
+        onNotificationClick={() => setRightPanelOpen(!rightPanelOpen)}
+        currentPath={currentPath}
+        {...sidebarProps}
       />
       
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative h-full transition-all duration-300">
-        <TopBar 
-          onNotificationClick={() => setRightPanelOpen(!rightPanelOpen)}
-        />
+        {showTopBar && <TopBar currentPath={currentPath} />}
         
         <main className="flex-1 overflow-y-auto scroll-smooth">
           <div className="max-w-full mx-auto w-full h-full">
@@ -59,21 +71,105 @@ const Layout = ({ children }: React.PropsWithChildren<{}>) => {
 };
 
 const App = () => {
+  const [currentPath, setCurrentPath] = useState(() => {
+      return window.location.hash.slice(1) || '/';
+  });
+
+  // Lifted Chat History State
+  const [chatHistory, setChatHistory] = useState(INITIAL_CHATS);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+
+  // Lifted State for Dataset -> Chat interaction
+  const [incomingDataset, setIncomingDataset] = useState<{name: string, data: TableData, source: string} | null>(null);
+
+  useEffect(() => {
+      const handleHashChange = () => {
+          const path = window.location.hash.slice(1) || '/';
+          setCurrentPath(path);
+      };
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Chat History Handlers
+  const handleChatUpdate = (id: string, title: string) => {
+    setChatHistory(prev => {
+      const exists = prev.find(c => c.id === id);
+      if (exists) {
+        return prev.map(c => c.id === id ? { ...c, title } : c);
+      }
+      // Add new chat to top
+      return [{ id, title }, ...prev];
+    });
+  };
+
+  const handleRenameChat = (id: string, newTitle: string) => {
+    setChatHistory(prev => prev.map(c => c.id === id ? { ...c, title: newTitle } : c));
+  };
+
+  const handleDeleteChat = (id: string) => {
+    setChatHistory(prev => prev.filter(c => c.id !== id));
+    if (selectedChatId === id) setSelectedChatId(null);
+  };
+
+  const handleReorderChats = (newOrder: typeof chatHistory) => {
+    setChatHistory(newOrder);
+  };
+
+  const handleSelectChat = (id: string) => {
+    setSelectedChatId(id);
+    // Ensure we are on the chat page
+    window.location.hash = '/';
+  };
+
+  const handleOpenDataset = (dataset: {name: string, data: TableData, source: string}) => {
+    setIncomingDataset(dataset);
+    window.location.hash = '/';
+  };
+
+  const renderPage = () => {
+    switch (currentPath) {
+      case '/': 
+        return (
+          <NewChat 
+            onChatUpdate={handleChatUpdate} 
+            selectedChatId={selectedChatId} 
+            incomingDataset={incomingDataset}
+            onClearIncomingDataset={() => setIncomingDataset(null)}
+          />
+        );
+      case '/search': return <SearchPage />;
+      case '/projects': return <Projects />;
+      case '/datasets': return <Datasets onOpenDataset={handleOpenDataset} />;
+      case '/notebooks': return <Notebooks />;
+      case '/integrations': return <Integrations />;
+      case '/published': return <Published />;
+      default: 
+        return (
+          <NewChat 
+            onChatUpdate={handleChatUpdate} 
+            selectedChatId={selectedChatId}
+            incomingDataset={incomingDataset}
+            onClearIncomingDataset={() => setIncomingDataset(null)}
+          />
+        );
+    }
+  };
+
   return (
     <ThemeProvider>
-      <HashRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<NewChat />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/datasets" element={<Datasets />} />
-            <Route path="/notebooks" element={<Notebooks />} />
-            <Route path="/integrations" element={<Integrations />} />
-            <Route path="/published" element={<Published />} />
-          </Routes>
+        <Layout 
+          currentPath={currentPath}
+          sidebarProps={{
+            chatHistory,
+            onRenameChat: handleRenameChat,
+            onDeleteChat: handleDeleteChat,
+            onReorderChats: handleReorderChats,
+            onSelectChat: handleSelectChat
+          }}
+        >
+          {renderPage()}
         </Layout>
-      </HashRouter>
     </ThemeProvider>
   );
 };

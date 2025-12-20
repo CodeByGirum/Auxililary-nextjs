@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   name: string;
@@ -11,6 +12,7 @@ export interface Project {
   icon: any; // Lucide Icon component
   image?: string; // URL for project cover image
   location?: string; // For the detailed card view
+  tags?: string[]; // For the folder card view
   stats?: {
     distance?: string;
     elevation?: string;

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Terminal, BarChart3, FileText, Sparkles } from 'lucide-react';
-import { AuxLogo } from '../Sidebar';
+import { AuxLogo } from '../sidebar/AuxLogo';
 
 interface EmptyStateProps {
   onSuggestionClick: (prompt: string, modelId: string) => void;

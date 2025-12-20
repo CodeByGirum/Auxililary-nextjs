@@ -1,5 +1,5 @@
 {
-  "name": "SnowUI Dashboard",
+  "name": "Auxiliary",
   "description": "A high-fidelity React implementation of the SnowUI dashboard featuring responsive layouts, interactive charts, and detailed project management views.",
   "requestFramePermissions": [
     "microphone"
