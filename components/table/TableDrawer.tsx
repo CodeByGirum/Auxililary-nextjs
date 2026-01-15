@@ -7,7 +7,7 @@ import { PivotView } from './views/PivotView';
 import { VisualsView } from './views/VisualsView';
 import { NotebookView } from './views/NotebookView';
 import { PivotConfig } from '../../utils/tableUtils';
-import { NotebookReport } from '../types';
+import { NotebookReport } from './types';
 
 interface TableDrawerProps {
   isOpen: boolean;
@@ -31,11 +31,11 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
   const [activeTab, setActiveTab] = useState<'data' | 'pivot' | 'visuals' | 'analysis'>('data');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
-  
+
   // Data State
   const [rows, setRows] = useState<any[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
-  
+
   // View States
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sortConfig, setSortConfig] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(null);
@@ -62,43 +62,43 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
       }
 
       if (data.metadata) {
-         if (data.metadata.filters) setFilters(data.metadata.filters);
-         if (data.metadata.sortConfig) setSortConfig(data.metadata.sortConfig);
-         if (data.metadata.pivotConfig) setPivotConfig(data.metadata.pivotConfig);
-         if (data.metadata.visualsConfig) setVisualsConfig(data.metadata.visualsConfig);
-         if (data.metadata.notebookReport) setNotebookReport(data.metadata.notebookReport);
+        if (data.metadata.filters) setFilters(data.metadata.filters);
+        if (data.metadata.sortConfig) setSortConfig(data.metadata.sortConfig);
+        if (data.metadata.pivotConfig) setPivotConfig(data.metadata.pivotConfig);
+        if (data.metadata.visualsConfig) setVisualsConfig(data.metadata.visualsConfig);
+        if (data.metadata.notebookReport) setNotebookReport(data.metadata.notebookReport);
       }
       if (visualHint && ['bar', 'pie', 'line'].includes(visualHint)) {
-          setActiveTab('visuals');
-          setVisualsConfig(prev => ({ ...prev, chartType: visualHint as any }));
+        setActiveTab('visuals');
+        setVisualsConfig(prev => ({ ...prev, chartType: visualHint as any }));
       }
     }
   }, [data, visualHint]);
 
   // Persist logic - Silent background save
   const persistState = useCallback(() => {
-      const metadata = {
-          pivotConfig,
-          visualsConfig,
-          notebookReport,
-          filters,
-          sortConfig
-      };
-      onSave({ headers, rows, metadata });
-      setLastSaved(new Date());
+    const metadata = {
+      pivotConfig,
+      visualsConfig,
+      notebookReport,
+      filters,
+      sortConfig
+    };
+    onSave({ headers, rows, metadata });
+    setLastSaved(new Date());
   }, [headers, rows, pivotConfig, visualsConfig, notebookReport, filters, sortConfig, onSave]);
 
   // 3-second Autosave Effect - Truly in the background
   useEffect(() => {
     if (!isOpen) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    
+
     saveTimerRef.current = setTimeout(() => {
-        persistState();
+      persistState();
     }, 3000);
 
     return () => {
-        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
   }, [rows, pivotConfig, visualsConfig, filters, sortConfig, isOpen, persistState]);
 
@@ -150,9 +150,9 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
           <div className="flex flex-col">
             <h2 className="text-sm font-medium text-gray-900 dark:text-white tracking-tight">{fileName}</h2>
             <div className="flex items-center gap-1.5">
-                <span className="text-[9px] font-medium uppercase tracking-widest text-gray-400">
-                    {lastSaved ? `Autosaved ${lastSaved.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}` : 'Live Workspace'}
-                </span>
+              <span className="text-[9px] font-medium uppercase tracking-widest text-gray-400">
+                {lastSaved ? `Autosaved ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Live Workspace'}
+              </span>
             </div>
           </div>
         </div>
@@ -167,11 +167,10 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-1.5 text-[11px] font-medium uppercase tracking-wider rounded-lg transition-all duration-300 ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 px-4 py-1.5 text-[11px] font-medium uppercase tracking-wider rounded-lg transition-all duration-300 ${activeTab === tab.id
                   ? 'bg-white dark:bg-[#333] text-gray-900 dark:text-white shadow-sm'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
+                }`}
             >
               <tab.icon size={13} strokeWidth={2} />
               {tab.label}
@@ -210,12 +209,12 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
           />
         )}
         {activeTab === 'pivot' && (
-           <PivotView 
-              headers={headers} 
-              rows={processedRows} 
-              config={pivotConfig}
-              setConfig={setPivotConfig}
-           />
+          <PivotView
+            headers={headers}
+            rows={processedRows}
+            config={pivotConfig}
+            setConfig={setPivotConfig}
+          />
         )}
         {activeTab === 'visuals' && (
           <VisualsView

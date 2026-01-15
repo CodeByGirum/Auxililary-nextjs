@@ -30,7 +30,7 @@ export const useChatSession = ({ selectedModel, useSearch, isAnalyzeMode }: UseC
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const lastMsgs = history.slice(-4).map(m => `${m.role}: ${m.text}`).join('\n');
       const hasData = !!findActiveData(history);
-      
+
       const prompt = `
         Based on the conversation history below, generate 3 short, proactive, and intelligent follow-up options for the user.
         Context:
@@ -64,18 +64,18 @@ export const useChatSession = ({ selectedModel, useSearch, isAnalyzeMode }: UseC
     try {
       setIsGenerating(true);
       setSuggestions([]);
-      
+
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const activeAttachment = findActiveData(history);
       const hasData = !!activeAttachment;
 
       // Base instruction
       let systemInstruction = "You are a helpful, intelligent AI assistant.";
-      
+
       // Data Analysis Instruction (Active whenever data is present, regardless of mode toggle)
       if (hasData) {
-          const cols = activeAttachment?.tableData?.headers.join(', ');
-          systemInstruction = `
+        const cols = activeAttachment?.tableData?.headers.join(', ');
+        systemInstruction = `
 You are an expert Data Analyst. The user has uploaded a dataset with columns: [${cols}].
 The dataset is available in a SQL table named 'data'.
 
@@ -95,12 +95,12 @@ The dataset is available in a SQL table named 'data'.
 - Use 'data' as the table name.
 `;
       } else if (isAnalyzeMode) {
-          systemInstruction = "You are an expert data analyst. Provide deep, structured analysis and reasoning.";
+        systemInstruction = "You are an expert data analyst. Provide deep, structured analysis and reasoning.";
       }
 
       const tools = (useSearch && !hasData) ? [{ googleSearch: {} }] : undefined;
       const modelId = (useSearch && selectedModel.id.includes('lite')) ? 'gemini-flash-lite-latest' : selectedModel.id;
-      
+
       const aiMsgId = (Date.now() + 1).toString();
       const modelMsg: Message = { id: aiMsgId, role: 'model', text: '', isStreaming: true, timestamp: new Date() };
       setMessages(prev => [...prev, modelMsg]);
@@ -110,12 +110,12 @@ The dataset is available in a SQL table named 'data'.
         if (m.attachments) {
           m.attachments.forEach(a => {
             if (a.mimeType.startsWith('image/')) {
-               const base64Data = a.base64.split(',')[1];
-               parts.push({ inlineData: { mimeType: a.mimeType, data: base64Data } });
+              const base64Data = a.base64.split(',')[1];
+              parts.push({ inlineData: { mimeType: a.mimeType, data: base64Data } });
             } else if (a.tableData) {
-               const headerInfo = a.tableData.headers.join(', ');
-               const rowPreview = JSON.stringify(a.tableData.rows.slice(0, 3));
-               parts.push({ text: `\n<file_context>\nFilename: ${a.name}\nColumns: ${headerInfo}\nPreview: ${rowPreview}\n</file_context>` });
+              const headerInfo = a.tableData.headers.join(', ');
+              const rowPreview = JSON.stringify(a.tableData.rows.slice(0, 3));
+              parts.push({ text: `\n<file_context>\nFilename: ${a.name}\nColumns: ${headerInfo}\nPreview: ${rowPreview}\n</file_context>` });
             }
           });
         }
@@ -129,7 +129,7 @@ The dataset is available in a SQL table named 'data'.
       });
 
       let fullText = '';
-      let groundingMetadata = null;
+      let groundingMetadata: any = null;
 
       for await (const chunk of stream) {
         fullText += chunk.text || '';
@@ -140,41 +140,41 @@ The dataset is available in a SQL table named 'data'.
       let executionResults: Record<number, any> = {};
 
       if (hasData) {
-          const codeBlockRegex = /```(\w*)\s*([\s\S]*?)```/g;
-          let match;
-          let index = 0;
-          
-          while ((match = codeBlockRegex.exec(fullText)) !== null) {
-              const lang = match[1].toLowerCase();
-              const code = match[2].trim();
-              
-              if (lang === 'sql') {
-                  const result = await executeSQL(code, activeAttachment?.tableData!);
-                  
-                  // Look for visual hint immediately after this block
-                  const textAfter = fullText.slice(match.index + match[0].length);
-                  const visualMatch = textAfter.match(/^\s*<visual_type>(.*?)<\/visual_type>/);
-                  
-                  if (result.type === 'table' && visualMatch) {
-                     (result as any).visualHint = visualMatch[1].trim();
-                  }
-                  
-                  executionResults[index] = result;
-              }
-              index++;
+        const codeBlockRegex = /```(\w*)\s*([\s\S]*?)```/g;
+        let match;
+        let index = 0;
+
+        while ((match = codeBlockRegex.exec(fullText)) !== null) {
+          const lang = match[1].toLowerCase();
+          const code = match[2].trim();
+
+          if (lang === 'sql') {
+            const result = await executeSQL(code, activeAttachment?.tableData!);
+
+            // Look for visual hint immediately after this block
+            const textAfter = fullText.slice(match.index + match[0].length);
+            const visualMatch = textAfter.match(/^\s*<visual_type>(.*?)<\/visual_type>/);
+
+            if (result.type === 'table' && visualMatch) {
+              (result as any).visualHint = visualMatch[1].trim();
+            }
+
+            executionResults[index] = result;
           }
+          index++;
+        }
       }
 
       let cleanedText = fullText
-          .replace(/<visual_type>.*?<\/visual_type>/g, '')
-          .trim();
+        .replace(/<visual_type>.*?<\/visual_type>/g, '')
+        .trim();
 
-      const finalModelMsg: Message = { 
-        ...modelMsg, 
-        text: cleanedText, 
-        isStreaming: false, 
+      const finalModelMsg: Message = {
+        ...modelMsg,
+        text: cleanedText,
+        isStreaming: false,
         groundingMetadata,
-        executionResults 
+        executionResults
       };
 
       setMessages(prev => prev.map(m => m.id === aiMsgId ? finalModelMsg : m));

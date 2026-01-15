@@ -5754,7 +5754,7 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                                         }, void 0, false, {
                                             fileName: "[project]/components/table/TableDrawer.tsx",
                                             lineNumber: 153,
-                                            columnNumber: 17
+                                            columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/table/TableDrawer.tsx",
@@ -5805,7 +5805,7 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                                         strokeWidth: 2
                                     }, void 0, false, {
                                         fileName: "[project]/components/table/TableDrawer.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 175,
                                         columnNumber: 15
                                     }, this),
                                     tab.label
@@ -5829,7 +5829,7 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                                 children: "Save"
                             }, void 0, false, {
                                 fileName: "[project]/components/table/TableDrawer.tsx",
-                                lineNumber: 183,
+                                lineNumber: 182,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5840,18 +5840,18 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                                     strokeWidth: 2
                                 }, void 0, false, {
                                     fileName: "[project]/components/table/TableDrawer.tsx",
-                                    lineNumber: 193,
+                                    lineNumber: 192,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/table/TableDrawer.tsx",
-                                lineNumber: 189,
+                                lineNumber: 188,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/table/TableDrawer.tsx",
-                        lineNumber: 182,
+                        lineNumber: 181,
                         columnNumber: 9
                     }, this)
                 ]
@@ -5875,7 +5875,7 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                         setSortConfig: setSortConfig
                     }, void 0, false, {
                         fileName: "[project]/components/table/TableDrawer.tsx",
-                        lineNumber: 200,
+                        lineNumber: 199,
                         columnNumber: 11
                     }, this),
                     activeTab === 'pivot' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$table$2f$views$2f$PivotView$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["PivotView"], {
@@ -5885,8 +5885,8 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                         setConfig: setPivotConfig
                     }, void 0, false, {
                         fileName: "[project]/components/table/TableDrawer.tsx",
-                        lineNumber: 213,
-                        columnNumber: 12
+                        lineNumber: 212,
+                        columnNumber: 11
                     }, this),
                     activeTab === 'visuals' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$table$2f$views$2f$VisualsView$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["VisualsView"], {
                         headers: headers,
@@ -5896,7 +5896,7 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                         setConfig: setVisualsConfig
                     }, void 0, false, {
                         fileName: "[project]/components/table/TableDrawer.tsx",
-                        lineNumber: 221,
+                        lineNumber: 220,
                         columnNumber: 11
                     }, this),
                     activeTab === 'analysis' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$table$2f$views$2f$NotebookView$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["NotebookView"], {
@@ -5908,13 +5908,13 @@ const TableDrawer = ({ isOpen, data, fileName, visualHint, onClose, onSave, mode
                         triggerOnMount: !notebookReport
                     }, void 0, false, {
                         fileName: "[project]/components/table/TableDrawer.tsx",
-                        lineNumber: 230,
+                        lineNumber: 229,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/table/TableDrawer.tsx",
-                lineNumber: 198,
+                lineNumber: 197,
                 columnNumber: 7
             }, this)
         ]
@@ -6416,6 +6416,14 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
     const resizerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
     const [editingTabId, setEditingTabId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [editingTitle, setEditingTitle] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [isMobile, setIsMobile] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Sync selected tab with global state selection
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const checkMobile = ()=>setIsMobile(window.innerWidth < 1024); // Matching sidebar breakpoint
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return ()=>window.removeEventListener('resize', checkMobile);
+    }, []);
     // Sync selected tab with global state selection
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         if (selectedChatId) setActiveTabId(selectedChatId);
@@ -6542,7 +6550,7 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                                 className: "tab-inactive-shadow"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/NewChat.tsx",
-                                                lineNumber: 385,
+                                                lineNumber: 395,
                                                 columnNumber: 60
                                             }, this),
                                             editingTabId === tab.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -6555,14 +6563,14 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                                 onClick: (e)=>e.stopPropagation()
                                             }, void 0, false, {
                                                 fileName: "[project]/components/NewChat.tsx",
-                                                lineNumber: 388,
+                                                lineNumber: 398,
                                                 columnNumber: 37
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: `truncate text-[11px] font-bold uppercase tracking-[0.15em] transition-opacity duration-300 ${activeTabId === tab.id ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`,
                                                 children: tab.title
                                             }, void 0, false, {
                                                 fileName: "[project]/components/NewChat.tsx",
-                                                lineNumber: 398,
+                                                lineNumber: 408,
                                                 columnNumber: 37
                                             }, this),
                                             tabs.length > 1 && (activeTabId === tab.id || hoveredTabId === tab.id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -6581,31 +6589,31 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                                     strokeWidth: 2.5
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/NewChat.tsx",
-                                                    lineNumber: 413,
+                                                    lineNumber: 423,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/NewChat.tsx",
-                                                lineNumber: 404,
+                                                lineNumber: 414,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/NewChat.tsx",
-                                        lineNumber: 371,
+                                        lineNumber: 381,
                                         columnNumber: 29
                                     }, this),
                                     activeTabId !== tab.id && activeTabId !== tabs[idx + 1]?.id && idx < tabs.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "h-5 w-px bg-gray-300 dark:bg-gray-700/50 mb-3 mx-[-1px]"
                                     }, void 0, false, {
                                         fileName: "[project]/components/NewChat.tsx",
-                                        lineNumber: 419,
+                                        lineNumber: 429,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, tab.id, true, {
                                 fileName: "[project]/components/NewChat.tsx",
-                                lineNumber: 361,
+                                lineNumber: 371,
                                 columnNumber: 25
                             }, this)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -6627,23 +6635,23 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                 strokeWidth: 2.5
                             }, void 0, false, {
                                 fileName: "[project]/components/NewChat.tsx",
-                                lineNumber: 429,
+                                lineNumber: 439,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/NewChat.tsx",
-                            lineNumber: 424,
+                            lineNumber: 434,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/NewChat.tsx",
-                    lineNumber: 359,
+                    lineNumber: 369,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/NewChat.tsx",
-                lineNumber: 358,
+                lineNumber: 368,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6666,22 +6674,22 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                 lastDrawerUpdate: drawerUpdate[tab.id]
                             }, tab.id, false, {
                                 fileName: "[project]/components/NewChat.tsx",
-                                lineNumber: 438,
+                                lineNumber: 448,
                                 columnNumber: 25
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/NewChat.tsx",
-                        lineNumber: 436,
+                        lineNumber: 446,
                         columnNumber: 17
                     }, this),
-                    isTableDrawerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+                    !isMobile && isTableDrawerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 onMouseDown: handleMouseDown,
                                 className: "w-1.5 h-full cursor-col-resize hover:bg-indigo-500 active:bg-indigo-600 bg-gray-200 dark:bg-[#333] z-30 flex-shrink-0 transition-colors"
                             }, void 0, false, {
                                 fileName: "[project]/components/NewChat.tsx",
-                                lineNumber: 450,
+                                lineNumber: 460,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6699,12 +6707,12 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                                     mode: "inline"
                                 }, void 0, false, {
                                     fileName: "[project]/components/NewChat.tsx",
-                                    lineNumber: 452,
+                                    lineNumber: 462,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/NewChat.tsx",
-                                lineNumber: 451,
+                                lineNumber: 461,
                                 columnNumber: 25
                             }, this)
                         ]
@@ -6712,13 +6720,26 @@ const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClearIncomin
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/NewChat.tsx",
-                lineNumber: 435,
+                lineNumber: 445,
                 columnNumber: 13
+            }, this),
+            isMobile && isTableDrawerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$table$2f$TableDrawer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableDrawer"], {
+                isOpen: true,
+                data: activeTableData,
+                fileName: activeTableName,
+                visualHint: activeVisualHint,
+                onClose: ()=>setIsTableDrawerOpen(false),
+                onSave: handleSaveTable,
+                mode: "fixed"
+            }, void 0, false, {
+                fileName: "[project]/components/NewChat.tsx",
+                lineNumber: 470,
+                columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/NewChat.tsx",
-        lineNumber: 356,
+        lineNumber: 366,
         columnNumber: 9
     }, this);
 };

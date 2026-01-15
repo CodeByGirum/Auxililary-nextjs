@@ -26,7 +26,7 @@ import { VoiceOverlay } from './chat/VoiceOverlay';
 import { TableDrawer } from './table/TableDrawer';
 import { ContextSuggestions } from './chat/ContextSuggestions';
 import { Attachment, TableData } from '../types/chat';
-import { Plus, X, GripVertical, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, X, GripVertical, Upload } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 import { fileToDataUrl } from '../utils/fileHelpers';
 import { parseCSV, parseJSON } from '../utils/tableUtils';
@@ -276,6 +276,16 @@ export const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClear
     const [editingTabId, setEditingTabId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Sync selected tab with global state selection
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024); // Matching sidebar breakpoint
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     // Sync selected tab with global state selection
     useEffect(() => {
         if (selectedChatId) setActiveTabId(selectedChatId);
@@ -444,8 +454,8 @@ export const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClear
                     ))}
                 </div>
 
-                {/* Resizable Table Drawer Side Panel */}
-                {isTableDrawerOpen && (
+                {/* Resizable Table Drawer Side Panel (Desktop Split View) */}
+                {!isMobile && isTableDrawerOpen && (
                     <>
                         <div onMouseDown={handleMouseDown} className="w-1.5 h-full cursor-col-resize hover:bg-indigo-500 active:bg-indigo-600 bg-gray-200 dark:bg-[#333] z-30 flex-shrink-0 transition-colors" />
                         <div style={{ width: drawerWidth }} className="h-full flex-shrink-0 bg-white dark:bg-[#1e1e1e] shadow-2xl border-l border-gray-200 dark:border-[#333] overflow-hidden">
@@ -454,6 +464,19 @@ export const NewChat = ({ onChatUpdate, selectedChatId, incomingDataset, onClear
                     </>
                 )}
             </div>
+
+            {/* Mobile/Overlay Drawer */}
+            {isMobile && isTableDrawerOpen && (
+                <TableDrawer
+                    isOpen={true}
+                    data={activeTableData}
+                    fileName={activeTableName}
+                    visualHint={activeVisualHint}
+                    onClose={() => setIsTableDrawerOpen(false)}
+                    onSave={handleSaveTable}
+                    mode="fixed"
+                />
+            )}
         </div>
     );
 };
