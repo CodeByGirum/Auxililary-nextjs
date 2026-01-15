@@ -1,0 +1,8 @@
+{
+  "/datasets/page": "app/datasets/page.js",
+  "/integrations/page": "app/integrations/page.js",
+  "/notebooks/[id]/page": "app/notebooks/[id]/page.js",
+  "/notebooks/page": "app/notebooks/page.js",
+  "/page": "app/page.js",
+  "/projects/page": "app/projects/page.js"
+}

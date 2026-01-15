@@ -1,7 +1,7 @@
 
 import { Project, Notification, Activity, Contact } from './types';
-import { 
-  Layout, Globe, Coffee, PenTool, Smartphone, 
+import {
+  Layout, Globe, Coffee, PenTool, Smartphone,
   Briefcase, CreditCard, ShoppingCart, Music, PieChart, BarChart3, LineChart, Sparkles, FileText
 } from 'lucide-react';
 
@@ -126,75 +126,75 @@ export const MOCK_PROJECTS: Project[] = [
 ];
 
 export const PUBLISHED_NOTEBOOKS = [
-  { 
-    id: 'p1', 
-    title: 'Q4 Ad Spend Audit', 
+  {
+    id: 'p1',
+    title: 'Q4 Ad Spend Audit',
     description: 'A comprehensive audit of Meta and Google Ads performance across primary conversion funnels.',
-    author: 'Sarah Connor', 
+    author: 'Sarah Connor',
     date: 'Jan 15, 2024',
     category: 'Advertising',
     gradient: 'bg-gradient-to-br from-[#f472b6] to-[#db2777]',
-    icon: PieChart,
+    iconName: 'PieChart',
     likes: 124,
     reads: '1.2k'
   },
-  { 
-    id: 'p2', 
-    title: 'Influencer Campaign ROI', 
+  {
+    id: 'p2',
+    title: 'Influencer Campaign ROI',
     description: 'Measuring the direct and assisted revenue impact of our Q3 creator partnerships.',
-    author: 'Elias K. Wren', 
+    author: 'Elias K. Wren',
     date: 'Dec 10, 2023',
     category: 'Social',
     gradient: 'bg-gradient-to-br from-[#60a5fa] to-[#2563eb]',
-    icon: BarChart3,
+    iconName: 'BarChart3',
     likes: 89,
     reads: '2.4k'
   },
-  { 
-    id: 'p3', 
-    title: 'Email Segment Study', 
+  {
+    id: 'p3',
+    title: 'Email Segment Study',
     description: 'Behavioral analysis of automated flows vs. weekly blasts for retention optimization.',
-    author: 'Frank Herbert', 
+    author: 'Frank Herbert',
     date: 'Nov 05, 2023',
     category: 'CRM',
     gradient: 'bg-gradient-to-br from-[#fbbf24] to-[#d97706]',
-    icon: LineChart,
+    iconName: 'LineChart',
     likes: 245,
     reads: '3.1k'
   },
-  { 
-    id: 'p4', 
-    title: 'SEO Keyword Gap 2024', 
+  {
+    id: 'p4',
+    title: 'SEO Keyword Gap 2024',
     description: 'Identifying high-volume search opportunities our top 3 competitors are currently ignoring.',
-    author: 'Marketing Ops', 
+    author: 'Marketing Ops',
     date: 'Feb 12, 2024',
     category: 'Search',
     gradient: 'bg-gradient-to-br from-[#818cf8] to-[#4f46e5]',
-    icon: Sparkles,
+    iconName: 'Sparkles',
     likes: 512,
     reads: '12k'
   },
-  { 
-    id: 'p5', 
-    title: 'Brand Sentiment Pulse', 
+  {
+    id: 'p5',
+    title: 'Brand Sentiment Pulse',
     description: 'Analyzing 50,000+ social mentions to gauge the impact of the recent product rebrand.',
-    author: 'Product Team', 
+    author: 'Product Team',
     date: 'Feb 20, 2024',
     category: 'Research',
     gradient: 'bg-gradient-to-br from-[#34d399] to-[#059669]',
-    icon: FileText,
+    iconName: 'FileText',
     likes: 67,
     reads: '890'
   },
-  { 
-    id: 'p6', 
-    title: 'Retargeting Leakage', 
+  {
+    id: 'p6',
+    title: 'Retargeting Leakage',
     description: 'Technical investigation into drop-off rates for dynamic product ads (DPA) on mobile.',
-    author: 'Growth Team', 
+    author: 'Growth Team',
     date: 'Mar 01, 2024',
     category: 'Growth',
     gradient: 'bg-gradient-to-br from-[#f87171] to-[#dc2626]',
-    icon: BarChart3,
+    iconName: 'BarChart3',
     likes: 156,
     reads: '1.5k'
   },
@@ -222,4 +222,81 @@ export const CONTACTS: Contact[] = [
   { id: '4', name: 'Andi Lane', avatar: 'https://picsum.photos/40/40?random=33' },
   { id: '5', name: 'Kate Morrison', avatar: 'https://picsum.photos/40/40?random=34' },
   { id: '6', name: 'Koray Okumus', avatar: 'https://picsum.photos/40/40?random=35' },
+];
+
+import { Notebook } from './types';
+
+export const MOCK_NOTEBOOKS: Notebook[] = [
+  {
+    id: '1',
+    title: 'Customer Churn Analysis',
+    description: 'Deep dive into Q3 churn factors and retention strategies.',
+    author: 'Sarah Connor',
+    date: 'Oct 24, 2023',
+    category: 'Analysis',
+    gradient: 'bg-gradient-to-br from-[#f472b6] to-[#db2777]', // Pink
+    iconName: 'PieChart',
+    environment: 'python',
+    compute: 'cpu-std'
+  },
+  {
+    id: '2',
+    title: 'Q3 Financial Report',
+    description: 'Consolidated revenue streams and expense breakdown.',
+    author: 'Elias K. Wren',
+    date: 'Nov 10, 2023',
+    category: 'Finance',
+    gradient: 'bg-gradient-to-br from-[#60a5fa] to-[#2563eb]', // Blue
+    iconName: 'BarChart3',
+    environment: 'r',
+    compute: 'cpu-pro'
+  },
+  {
+    id: '3',
+    title: 'User Behavior Study',
+    description: 'Session heatmap analysis and click-through rate study.',
+    author: 'Frank Herbert',
+    date: 'Dec 05, 2023',
+    category: 'Research',
+    gradient: 'bg-gradient-to-br from-[#fbbf24] to-[#d97706]', // Amber
+    iconName: 'LineChart',
+    environment: 'python',
+    compute: 'gpu-t4'
+  },
+  {
+    id: '4',
+    title: 'Neural Networks 101',
+    description: 'Introductory guide to perceptrons and backpropagation.',
+    author: 'Alan Turing',
+    date: 'Jan 12, 2024',
+    category: 'Education',
+    gradient: 'bg-gradient-to-br from-[#818cf8] to-[#4f46e5]', // Indigo
+    iconName: 'Sparkles',
+    environment: 'python',
+    compute: 'gpu-t4'
+  },
+  {
+    id: '5',
+    title: 'Product Roadmap 2024',
+    description: 'Timeline for upcoming features and major releases.',
+    author: 'Product Team',
+    date: 'Feb 02, 2024',
+    category: 'Strategy',
+    gradient: 'bg-gradient-to-br from-[#34d399] to-[#059669]', // Emerald
+    iconName: 'FileText',
+    environment: 'sql',
+    compute: 'cpu-std'
+  },
+  {
+    id: '6',
+    title: 'Competitor Analysis',
+    description: 'Feature comparison against top 3 market competitors.',
+    author: 'Marketing',
+    date: 'Feb 15, 2024',
+    category: 'Marketing',
+    gradient: 'bg-gradient-to-br from-[#f87171] to-[#dc2626]', // Red
+    iconName: 'BarChart3',
+    environment: 'python',
+    compute: 'cpu-std'
+  },
 ];

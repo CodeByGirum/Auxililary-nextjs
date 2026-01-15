@@ -1,0 +1,274 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbar Styles */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.subtle-scrollbar::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+}
+
+.subtle-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.subtle-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.05);
+    /* Extremely subtle */
+    border-radius: 10px;
+}
+
+.dark .subtle-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark .subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* PrismJS Theme */
+:root {
+    --prism-bg: #ffffff;
+    --prism-text: #24292e;
+    --prism-comment: #6a737d;
+    --prism-keyword: #d73a49;
+    --prism-string: #032f62;
+    --prism-function: #6f42c1;
+    --prism-number: #005cc5;
+    --prism-operator: #d73a49;
+    --prism-class: #6f42c1;
+}
+
+.dark {
+    --prism-bg: #1e1e1e;
+    --prism-text: #d4d4d4;
+    --prism-comment: #6a9955;
+    --prism-keyword: #c586c0;
+    --prism-string: #ce9178;
+    --prism-function: #dcdcaa;
+    --prism-number: #b5cea8;
+    --prism-operator: #d4d4d4;
+    --prism-class: #4ec9b0;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+    color: var(--prism-text);
+    background: var(--prism-bg) !important;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    tab-size: 4;
+    hyphens: none;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: var(--prism-comment);
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: var(--prism-text);
+    opacity: 0.7;
+}
+
+.token.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: var(--prism-number);
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: var(--prism-string);
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: var(--prism-operator);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: var(--prism-keyword);
+}
+
+.token.function,
+.token.class-name {
+    color: var(--prism-function);
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: var(--prism-operator);
+}
+
+pre[class*="language-"] {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    text-shadow: none !important;
+    padding: 1rem !important;
+}
+
+/* Browser Tab Shoulder Style */
+.tab-active {
+    position: relative;
+    z-index: 30;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -4px 12px -2px rgba(0, 0, 0, 0.03);
+    /* Subtle top lift */
+}
+
+.dark .tab-active {
+    box-shadow: 0 -4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+.tab-active::before,
+.tab-active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-active::before {
+    left: -20px;
+    border-bottom-right-radius: 18px;
+    box-shadow: 10px 0 0 0 white;
+}
+
+.tab-active::after {
+    right: -20px;
+    border-bottom-left-radius: 18px;
+    box-shadow: -10px 0 0 0 white;
+}
+
+.dark .tab-active::before {
+    box-shadow: 10px 0 0 0 #212121;
+}
+
+.dark .tab-active::after {
+    box-shadow: -10px 0 0 0 #212121;
+}
+
+/* Background Tab Depth */
+.tab-inactive {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #f7f7f7;
+    margin-bottom: 2px;
+}
+
+.dark .tab-inactive {
+    background-color: #1a1a1a;
+}
+
+/* The shadow requested by the user for background tabs to look "in the back" */
+.tab-inactive-shadow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+    border-radius: 12px 12px 0 0;
+}
+
+.dark .tab-inactive-shadow {
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tab-dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}

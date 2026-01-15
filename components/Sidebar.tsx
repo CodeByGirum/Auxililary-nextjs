@@ -1,4 +1,19 @@
-import React, { useState, useRef } from 'react';
+/**
+ * Sidebar.tsx
+ * 
+ * Purpose: 
+ * The primary navigation component for the application, handling Drag-and-Drop capability for
+ * chats/notebooks, and collapsible states for responsive design.
+ * 
+ * Outline:
+ * - Sidebar: Main component.
+ * - Draggable Sections: Notebooks and Chats reordering logic.
+ * - SidebarProfile: User settings popover.
+ * - Navigation: Primary links (Projects, Datasets, etc.).
+ */
+
+import React, { useState, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { Folder, Database, Book, Puzzle, ChevronLeft, ChevronRight, ExternalLink, Globe } from 'lucide-react';
 import { AuxLogo } from './sidebar/AuxLogo';
 import { SidebarItem } from './sidebar/SidebarItem';
@@ -33,87 +48,123 @@ const primaryNav = [
   { icon: Puzzle, label: 'Integrations', path: '/integrations' },
 ];
 
-export const Sidebar = ({ 
+export const Sidebar = ({
   isExpanded, toggleSidebar, onOpenSettings, onNotificationClick, currentPath,
   chatHistory, onDeleteChat, onRenameChat, onReorderChats, onSelectChat
 }: SidebarProps) => {
   const [notebooks, setNotebooks] = useState(INITIAL_NOTEBOOKS);
   const dragItem = useRef<number | null>(null);
 
-  const handleRename = (type: 'notebooks' | 'chats', id: string, newName: string) => {
+  /**
+   * Handles renaming of both notebooks (local state) and chats (global state).
+   */
+  const handleRename = useCallback((type: 'notebooks' | 'chats', id: string, newName: string) => {
     if (type === 'notebooks') setNotebooks(prev => prev.map(item => item.id === id ? { ...item, title: newName } : item));
     else onRenameChat(id, newName);
-  };
+  }, [onRenameChat]);
 
-  const handleDelete = (type: 'notebooks' | 'chats', id: string) => {
+  /**
+   * Handles deletion of items.
+   */
+  const handleDelete = useCallback((type: 'notebooks' | 'chats', id: string) => {
     if (type === 'notebooks') setNotebooks(prev => prev.filter(item => item.id !== id));
     else onDeleteChat(id);
-  };
+  }, [onDeleteChat]);
 
-  const handleDragStart = (index: number) => { dragItem.current = index; };
-  
-  const handleDragEnter = (index: number, type: 'notebooks' | 'chats') => {
+  const handleDragStart = useCallback((index: number) => { dragItem.current = index; }, []);
+
+  /**
+   * Core Drag-and-Drop logic.
+   * Reorders items in the list as the user drags over them.
+   * Note: This mutation happens in real-time for visual feedback.
+   */
+  const handleDragEnter = useCallback((index: number, type: 'notebooks' | 'chats') => {
     if (dragItem.current === null || dragItem.current === index) return;
-    if (type === 'notebooks') {
-        const list = [...notebooks];
-        const item = list[dragItem.current];
-        list.splice(dragItem.current, 1);
-        list.splice(index, 0, item);
-        dragItem.current = index;
-        setNotebooks(list);
-    } else {
-        const list = [...chatHistory];
-        const item = list[dragItem.current];
-        list.splice(dragItem.current, 1);
-        list.splice(index, 0, item);
-        dragItem.current = index;
-        onReorderChats(list);
-    }
-  };
 
-  const handleDragEnd = () => { dragItem.current = null; };
+    // Helper to genericize the reorder logic
+    const reorderList = <T extends { id: string }>(list: T[], setList: (l: T[]) => void) => {
+      const newList = [...list];
+      const item = newList[dragItem.current!];
+      newList.splice(dragItem.current!, 1);
+      newList.splice(index, 0, item);
+      dragItem.current = index;
+      setList(newList);
+    };
+
+    if (type === 'notebooks') {
+      reorderList(notebooks, setNotebooks);
+    } else {
+      reorderList(chatHistory, onReorderChats);
+    }
+  }, [notebooks, chatHistory, onReorderChats]);
+
+  const handleDragEnd = useCallback(() => { dragItem.current = null; }, []);
 
   return (
     <aside className={`h-full bg-[#F9F9F9] dark:bg-[#171717] flex flex-col border-r border-gray-200 dark:border-[#333] z-50 flex-shrink-0 transition-all duration-300 ease-in-out ${isExpanded ? 'w-[280px]' : 'w-[60px]'}`}>
-      {/* Header */}
+      {/* Header with Collapsible Toggle */}
       <div className={`flex items-center h-14 mb-2 flex-shrink-0 ${isExpanded ? 'px-6 justify-between' : 'justify-center'}`}>
         <div className="flex items-center gap-3 text-black dark:text-white"><AuxLogo className="w-5 h-5" /></div>
-        <button onClick={toggleSidebar} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors">
-             {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+        <button onClick={toggleSidebar} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors" aria-label="Toggle Sidebar">
+          {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
         </button>
       </div>
 
-      {/* Navigation */}
+      {/* Primary Navigation Links */}
       <nav className="flex flex-col gap-0.5 w-full flex-shrink-0">
         {primaryNav.map((item) => (
           <SidebarItem key={item.path} icon={item.icon} label={item.label} to={item.path} active={currentPath === item.path} isExpanded={isExpanded} />
         ))}
       </nav>
 
-      {/* Draggable Sections */}
+      {/* Scrollable Area for Dynamic Content */}
       <div className={`flex-1 overflow-y-auto no-scrollbar mt-8 pb-4 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+
+        {/* Notebooks Section */}
         <div className="mb-6">
-            <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Notebooks</h3>
-            <div className="flex flex-col gap-0.5">
-                <div onClick={() => window.location.hash = '/published'} className="group flex items-center justify-between px-6 py-1 text-[13px] text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#212121] hover:text-black dark:hover:text-white cursor-pointer transition-colors rounded-none">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                        <Globe size={14} strokeWidth={1.5} className="flex-shrink-0 opacity-70" /> <span className="truncate">Published</span>
-                    </div>
-                    <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity" />
-                </div>
-                {notebooks.map((item, i) => (
-                    <SidebarDraggableItem key={item.id} id={item.id} index={i} label={item.title} onRename={(id, name) => handleRename('notebooks', id, name)} onDelete={(id) => handleDelete('notebooks', id)} onDragStart={handleDragStart} onDragEnter={(idx) => handleDragEnter(idx, 'notebooks')} onDragEnd={handleDragEnd} />
-                ))}
-            </div>
+          <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Notebooks</h3>
+          <div className="flex flex-col gap-0.5">
+            <Link href="/published" className="group flex items-center justify-between px-6 py-1 text-[13px] text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#212121] hover:text-black dark:hover:text-white cursor-pointer transition-colors rounded-none">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <Globe size={14} strokeWidth={1.5} className="flex-shrink-0 opacity-70" /> <span className="truncate">Published</span>
+              </div>
+              <ExternalLink size={14} className="opacity-0 group-hover:opacity-100 text-gray-400 transition-opacity" />
+            </Link>
+            {notebooks.map((item, i) => (
+              <SidebarDraggableItem
+                key={item.id}
+                id={item.id}
+                index={i}
+                label={item.title}
+                onRename={(id, name) => handleRename('notebooks', id, name)}
+                onDelete={(id) => handleDelete('notebooks', id)}
+                onDragStart={handleDragStart}
+                onDragEnter={(idx) => handleDragEnter(idx, 'notebooks')}
+                onDragEnd={handleDragEnd}
+              />
+            ))}
+          </div>
         </div>
 
+        {/* Recent Chats Section */}
         <div>
-            <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Recent Chats</h3>
-            <div className="flex flex-col gap-0.5">
-                {chatHistory.map((item, i) => (
-                    <SidebarDraggableItem key={item.id} id={item.id} index={i} label={item.title} onRename={(id, name) => handleRename('chats', id, name)} onDelete={(id) => handleDelete('chats', id)} onDragStart={handleDragStart} onDragEnter={(idx) => handleDragEnter(idx, 'chats')} onDragEnd={handleDragEnd} onClick={() => onSelectChat(item.id)} />
-                ))}
-            </div>
+          <h3 className="text-[11px] font-bold text-gray-500 dark:text-gray-500 px-6 mb-2 uppercase tracking-wider">Recent Chats</h3>
+          <div className="flex flex-col gap-0.5">
+            {chatHistory.map((item, i) => (
+              <SidebarDraggableItem
+                key={item.id}
+                id={item.id}
+                index={i}
+                label={item.title}
+                onRename={(id, name) => handleRename('chats', id, name)}
+                onDelete={(id) => handleDelete('chats', id)}
+                onDragStart={handleDragStart}
+                onDragEnter={(idx) => handleDragEnter(idx, 'chats')}
+                onDragEnd={handleDragEnd}
+                onClick={() => onSelectChat(item.id)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

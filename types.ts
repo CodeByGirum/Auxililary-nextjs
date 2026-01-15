@@ -76,7 +76,7 @@ export interface Notebook {
   date: string;
   category: string;
   gradient: string;
-  icon?: any;
+  iconName?: string;
   // Runtime Config
   environment?: Environment;
   compute?: Compute;
