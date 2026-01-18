@@ -20,60 +20,82 @@ interface RightPanelProps {
 }
 
 export const RightPanel = ({ isOpen, onClose }: RightPanelProps) => {
+  const panelRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose]);
+
   return (
     <div
+      ref={panelRef}
       className={`
-        fixed top-0 right-0 h-screen w-[320px] bg-[#F9F9F9] dark:bg-[#171717] 
-        border-l border-gray-200 dark:border-[#333] z-50 
-        transform transition-transform duration-300 ease-out shadow-xl
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+        fixed top-16 right-4 w-80 max-h-[calc(100vh-5rem)]
+        bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl
+        border border-gray-200 dark:border-white/10 
+        rounded-xl shadow-2xl z-50 
+        transform transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1)
+        ${isOpen ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-8 opacity-0 scale-95 pointer-events-none'}
       `}
-      onMouseLeave={onClose}
     >
-      <div className="h-full overflow-y-auto p-6">
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="font-medium text-base text-gray-900 dark:text-white">Notifications</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-            <X size={18} />
+      <div className="flex flex-col overflow-hidden rounded-xl">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/5">
+          <h3 className="font-medium text-sm text-gray-900 dark:text-white flex items-center gap-2">
+            Notifications
+            <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-all duration-200"
+          >
+            <X size={14} />
           </button>
         </div>
 
-        {/* Notifications List */}
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">Recent</h4>
-            <div className="space-y-4">
+        <div className="overflow-y-auto p-2 subtle-scrollbar">
+          {/* Notifications List */}
+          <div className="space-y-1">
+            <h4 className="px-2 py-2 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Recent</h4>
+            <div className="space-y-0.5">
               {NOTIFICATIONS.map((item) => (
-                <div key={item.id} className="flex gap-3 items-start group cursor-pointer p-2 -mx-2 rounded-lg hover:bg-gray-200/50 dark:hover:bg-white/5 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
+                <div key={item.id} className="flex gap-3 items-start group cursor-pointer p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition-all duration-200">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0 border border-gray-100 dark:border-white/10">
                     <img src={item.avatar} alt="" className="w-full h-full object-cover" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
-                      <span className="font-semibold">{item.user}</span> {item.action}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-snug">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{item.user}</span> {item.action}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">{item.time}</p>
+                    <p className="text-[10px] font-medium text-gray-400 mt-1">
+                      {item.time}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="w-full h-px bg-gray-200 dark:bg-[#333]"></div>
+            <div className="h-4"></div>
 
-          <div>
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">Activity</h4>
-            <div className="space-y-4">
+            <h4 className="px-2 py-2 text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Activity</h4>
+            <div className="space-y-0.5">
               {ACTIVITIES.map((item) => (
-                <div key={item.id} className="flex gap-3 items-start p-2 -mx-2 rounded-lg hover:bg-gray-200/50 dark:hover:bg-white/5 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
+                <div key={item.id} className="flex gap-3 items-start p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition-all duration-200">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex-shrink-0 border border-gray-100 dark:border-white/10">
                     <img src={item.avatar} alt="" className="w-full h-full object-cover" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                      <span className="font-semibold text-gray-900 dark:text-white">{item.user}</span> {item.action}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-snug">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{item.user}</span> {item.action}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">{item.time}</p>
+                    <p className="text-[10px] font-medium text-gray-400 mt-1">
+                      {item.time}
+                    </p>
                   </div>
                 </div>
               ))}

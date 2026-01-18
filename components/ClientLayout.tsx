@@ -73,11 +73,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                         {children}
                     </div>
                 </main>
-                {/* Trigger for Right Panel on hover/edge */}
-                <div
+                {/* Trigger for Right Panel on hover/edge REMOVED */}
+                {/* <div
                     className="fixed right-0 top-16 bottom-0 w-4 z-40 cursor-default hidden lg:block"
                     onMouseEnter={() => setRightPanelOpen(true)}
-                />
+                /> */}
             </div>
             <RightPanel isOpen={rightPanelOpen} onClose={() => setRightPanelOpen(false)} />
             <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />

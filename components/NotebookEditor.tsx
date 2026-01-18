@@ -285,6 +285,46 @@ export const NotebookEditor: React.FC<NotebookEditorProps> = ({ notebook: initia
                             onSlashMenu={setActiveSlashMenuId}
                             onSetSearchQuery={setTextSearchQuery}
                             onSetLastSelectedPrefix={setLastSelectedPrefix}
+                            onMove={(id, direction) => {
+                                setCells(prev => {
+                                    const index = prev.findIndex(c => c.id === id);
+                                    if (index === -1) return prev;
+                                    if (direction === 'up' && index === 0) return prev;
+                                    if (direction === 'down' && index === prev.length - 1) return prev;
+                                    const newCells = [...prev];
+                                    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+                                    [newCells[index], newCells[targetIndex]] = [newCells[targetIndex], newCells[index]];
+                                    return newCells;
+                                });
+                            }}
+                            onConvert={(id, type) => {
+                                setCells(prev => prev.map(c => c.id === id ? { ...c, type } : c));
+                            }}
+                            onRunAll={(direction, id) => {
+                                const index = cells.findIndex(c => c.id === id);
+                                if (index === -1) return;
+                                const cellsToRun = cells.filter((c, i) => direction === 'above' ? i < index : i > index);
+                                cellsToRun.forEach(c => handleRunCell(c.id));
+                            }}
+                            onToggleLock={(id) => {
+                                setCells(prev => prev.map(c => c.id === id ? { ...c, isLocked: !c.isLocked } : c));
+                            }}
+                            onDuplicate={(id) => {
+                                const index = cells.findIndex(c => c.id === id);
+                                if (index === -1) return;
+                                const cellToDuplicate = cells[index];
+                                const newCell = {
+                                    ...cellToDuplicate,
+                                    id: Date.now().toString(),
+                                    status: 'idle' as const,
+                                    output: undefined
+                                };
+                                setCells(prev => {
+                                    const newCells = [...prev];
+                                    newCells.splice(index + 1, 0, newCell);
+                                    return newCells;
+                                });
+                            }}
                         />
                     ))}
 

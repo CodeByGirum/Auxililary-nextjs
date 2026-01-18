@@ -8,6 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { Filter, Plus, Search, Check } from 'lucide-react';
 import { MOCK_DATASETS } from './data';
 import { Dataset, DatasetCard } from '../../components/datasets/DatasetCard';
+import { CreateDatasetModal } from '../../components/CreateDatasetModal';
 
 export default function DatasetsPage() {
     const router = useRouter();
@@ -19,6 +20,7 @@ export default function DatasetsPage() {
 
     // Filter & Menu State
     const [filterOpen, setFilterOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [selectedSources, setSelectedSources] = useState<string[]>([]);
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
     const filterRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,11 @@ export default function DatasetsPage() {
     const handleArchive = (id: string) => {
         // Treating archive as delete for the list view for now
         handleDelete(id);
+    };
+
+    const handleCreateDataset = (newDataset: Dataset) => {
+        setDatasets([newDataset, ...datasets]);
+        setIsCreateModalOpen(false);
     };
 
     return (
@@ -166,7 +173,10 @@ export default function DatasetsPage() {
                             )}
                         </div>
 
-                        <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-black dark:bg-white text-white dark:text-black border border-transparent rounded-lg text-sm font-medium hover:opacity-90 transition-opacity shadow-sm active:scale-95">
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-black dark:bg-white text-white dark:text-black border border-transparent rounded-lg text-sm font-medium hover:opacity-90 transition-opacity shadow-sm active:scale-95"
+                        >
                             <Plus size={16} strokeWidth={1.5} />
                             <span className="hidden sm:inline">Import Data</span>
                             <span className="sm:hidden">Import</span>
@@ -217,6 +227,12 @@ export default function DatasetsPage() {
                 fileName={activeTable?.name || ''}
                 onClose={() => setDrawerOpen(false)}
                 onSave={() => { }}
+            />
+
+            <CreateDatasetModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreate={handleCreateDataset}
             />
         </div>
     );

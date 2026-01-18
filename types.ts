@@ -59,6 +59,7 @@ export interface NotebookCell {
   id: string;
   type: CellType;
   content: string;
+  isLocked?: boolean;
   status: CellStatus;
   output?: {
     type: 'text' | 'table' | 'chart' | 'image' | 'error';

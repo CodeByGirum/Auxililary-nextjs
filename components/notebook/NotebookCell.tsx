@@ -1,10 +1,16 @@
 import React from 'react';
 import {
     Play, Plus, Trash2, GripVertical, ChevronDown,
-    RotateCw, Check, AlertCircle, Code2, Type, Search, Database, BarChart3, PenLine, Terminal, FileText
+    RotateCw, Check, AlertCircle, Code2, Type, Search, Database, BarChart3, PenLine, Terminal, FileText,
+    Lock, Unlock, MoreVertical, ArrowUp, ArrowDown, Split, Copy
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-python';
 import { NotebookCell as NotebookCellType } from '../../types';
 import { TableData } from '../../types/chat';
 import { EmbeddedTable } from '../chat/EmbeddedTable';
@@ -33,14 +39,95 @@ interface NotebookCellProps {
     onSlashMenu: (id: string | null) => void;
     onSetSearchQuery: (q: string) => void;
     onSetLastSelectedPrefix: (p: string) => void;
+    onMove: (id: string, direction: 'up' | 'down') => void;
+    onConvert: (id: string, type: 'code' | 'markdown') => void;
+    onRunAll: (direction: 'above' | 'below', id: string) => void;
+    onToggleLock: (id: string) => void;
+    onDuplicate: (id: string) => void;
 }
 
 export const NotebookCell: React.FC<NotebookCellProps> = ({
     cell, index, isActive, draggedIndex, activeTextDropdownId, activeSlashMenuId, textSearchQuery,
     onSetActive, onRun, onUpdate, onDelete, onSplit, onAdd,
     onDragStart, onDragOver, onDragEnd, onDrop,
-    onToggleDropdown, onSlashMenu, onSetSearchQuery, onSetLastSelectedPrefix
+    onToggleDropdown, onSlashMenu, onSetSearchQuery, onSetLastSelectedPrefix,
+    onMove, onConvert, onRunAll, onToggleLock, onDuplicate
 }) => {
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [slashSelectedIndex, setSlashSelectedIndex] = React.useState(0);
+    const menuRef = React.useRef<HTMLDivElement>(null);
+    const slashMenuRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Reset selection when query or menu visibility changes
+    React.useEffect(() => {
+        setSlashSelectedIndex(0);
+    }, [textSearchQuery, activeSlashMenuId]);
+
+    const filteredSlashItems = textBlockTypes.filter(b => b.label.toLowerCase().includes(textSearchQuery.toLowerCase()));
+
+    // Auto-scroll to selected slash item
+    React.useEffect(() => {
+        if (activeSlashMenuId === cell.id && slashMenuRef.current && filteredSlashItems.length > 0) {
+            const menuContainer = slashMenuRef.current;
+            const selectedElement = menuContainer.children[0]?.children[slashSelectedIndex] as HTMLElement;
+            if (selectedElement) {
+                const menuTop = menuContainer.scrollTop;
+                const menuBottom = menuTop + menuContainer.clientHeight;
+                const elTop = selectedElement.offsetTop;
+                const elBottom = elTop + selectedElement.clientHeight;
+
+                if (elTop < menuTop) {
+                    menuContainer.scrollTop = elTop;
+                } else if (elBottom > menuBottom) {
+                    menuContainer.scrollTop = elBottom - menuContainer.clientHeight;
+                }
+            }
+        }
+    }, [slashSelectedIndex, activeSlashMenuId, cell.id, filteredSlashItems.length]);
+
+    const CellMenu = () => (
+        <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#333] rounded-xl shadow-xl z-[100] animate-in fade-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5">
+            <div className="p-1">
+                <button onClick={() => { onMove(cell.id, 'up'); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <ArrowUp size={14} /> Move Up
+                </button>
+                <button onClick={() => { onMove(cell.id, 'down'); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <ArrowDown size={14} /> Move Down
+                </button>
+                <div className="my-1 border-b border-gray-100 dark:border-[#2f2f2f]" />
+                <button onClick={() => { onConvert(cell.id, cell.type === 'code' ? 'markdown' : 'code'); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    {cell.type === 'code' ? <FileText size={14} /> : <Code2 size={14} />}
+                    Convert to {cell.type === 'code' ? 'Text' : 'Code'}
+                </button>
+                <button onClick={() => { onSplit(cell.id, 0); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <Split size={14} /> Split Cell
+                </button>
+                <button onClick={() => { onDuplicate(cell.id); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <Copy size={14} /> Duplicate
+                </button>
+                <div className="my-1 border-b border-gray-100 dark:border-[#2f2f2f]" />
+                <button onClick={() => { onRun(cell.id); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <Play size={14} /> Run
+                </button>
+                <button onClick={() => { onRunAll('above', cell.id); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <ArrowUp size={14} className="rotate-180" /> Run Above
+                </button>
+                <button onClick={() => { onRunAll('below', cell.id); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-lg flex items-center gap-2">
+                    <ArrowDown size={14} /> Run Below
+                </button>
+            </div>
+        </div>
+    );
 
     const adjustHeight = (el: HTMLTextAreaElement) => {
         el.style.height = 'auto';
@@ -49,7 +136,7 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
 
     return (
         <div
-            className={`group relative mb-6 transition-all duration-300 ${draggedIndex === index ? 'opacity-40 scale-95' : 'opacity-100 scale-100'} ${activeTextDropdownId === cell.id ? 'z-50' : 'z-10'}`}
+            className={`group relative mb-6 transition-all duration-300 ${draggedIndex === index ? 'opacity-40 scale-95' : 'opacity-100 scale-100'} ${activeTextDropdownId === cell.id || isMenuOpen || activeSlashMenuId === cell.id ? 'z-[100]' : 'z-10'}`}
             onClick={() => onSetActive(cell.id)}
             draggable
             onDragStart={(e) => onDragStart(e, index)}
@@ -78,45 +165,65 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
             <div className={`
                 relative rounded-xl border transition-all duration-200
                 ${isActive
-                    ? 'border-blue-500 ring-4 ring-blue-500/5 bg-white dark:bg-[#252525] shadow-sm'
+                    ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-[#252525] shadow-sm'
                     : 'border-transparent hover:border-gray-200 dark:hover:border-[#333] bg-transparent'
                 }
             `}>
 
                 {/* Input Area */}
                 {cell.type === 'code' ? (
-                    <div className={`bg-[#f5f5f7] dark:bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-200 dark:border-[#333] transition-all duration-500 ${isActive ? 'animate-in fade-in slide-in-from-top-2' : ''}`}>
-                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-[#333] bg-gray-50/50 dark:bg-[#2a2a2a]">
+                    <div className={`bg-[#f5f5f7] dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-[#333] transition-all duration-500 ${isActive ? 'animate-in fade-in slide-in-from-top-2' : ''}`}>
+                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-[#333] bg-gray-50/50 dark:bg-[#2a2a2a] rounded-t-xl">
                             <span className="text-[10px] font-mono text-gray-400">In [{index + 1}]:</span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 <button
-                                    onClick={(e) => { e.stopPropagation(); onRun(cell.id); }}
-                                    className="p-1 text-gray-400 hover:text-green-600 transition-colors"
-                                    title="Run cell"
+                                    onClick={() => onToggleLock(cell.id)}
+                                    className={`p-1.5 rounded-md transition-colors ${cell.isLocked ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                    title={cell.isLocked ? "Unlock cell" : "Lock cell"}
                                 >
-                                    <Play size={14} className={cell.status === 'running' ? 'animate-pulse' : ''} />
+                                    {cell.isLocked ? <Lock size={13} /> : <Unlock size={13} />}
                                 </button>
-                                <button onClick={() => onDelete(cell.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={12} /></button>
+
+                                <button
+                                    onClick={() => onDelete(cell.id)}
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                                    title="Delete cell"
+                                >
+                                    <Trash2 size={13} />
+                                </button>
+                                <div className="relative" ref={menuRef}>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+                                        className={`p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors ${isMenuOpen ? 'bg-blue-50 text-blue-500 dark:bg-blue-900/20' : ''}`}
+                                    >
+                                        <MoreVertical size={13} />
+                                    </button>
+                                    {isMenuOpen && <CellMenu />}
+                                </div>
                             </div>
                         </div>
-                        <div className="p-4 relative">
-                            <textarea
-                                className="w-full bg-transparent outline-none font-mono text-sm text-gray-800 dark:text-gray-200 resize-none"
+                        <div className="relative rounded-b-xl overflow-hidden">
+                            <Editor
                                 value={cell.content}
-                                autoFocus={isActive}
-                                onChange={(e) => {
-                                    onUpdate(cell.id, e.target.value);
-                                    adjustHeight(e.target);
+                                onValueChange={(code) => onUpdate(cell.id, code)}
+                                highlight={code => Prism.highlight(code, Prism.languages.python || Prism.languages.javascript, 'python')}
+                                padding={16}
+                                className="font-mono text-sm"
+                                textareaClassName="focus:outline-none"
+                                style={{
+                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontSize: 14,
+                                    backgroundColor: 'transparent',
                                 }}
+                                placeholder={cell.isLocked ? "This cell is locked." : undefined}
+                                disabled={cell.isLocked}
                                 onKeyDown={(e) => {
+                                    if (cell.isLocked) return;
                                     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                                         e.preventDefault();
-                                        onSplit(cell.id, e.currentTarget.selectionStart);
+                                        onSplit(cell.id, (e.currentTarget as HTMLTextAreaElement).selectionStart);
                                     }
                                 }}
-                                onFocus={(e) => adjustHeight(e.target)}
-                                spellCheck={false}
-                                rows={Math.max(2, cell.content.split('\n').length)}
                             />
                         </div>
                     </div>
@@ -131,24 +238,30 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
 
                         {isActive ? (
                             <div className="flex flex-col min-h-full animate-in slide-in-from-top-2 duration-300">
-                                {/* Markdown Edit Header (Mobile/Active) */}
-                                <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 dark:border-[#2f2f2f] bg-gray-50/30 dark:bg-[#1a1a1a]">
-                                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Markdown</span>
-                                    <div className="flex items-center gap-2">
+                                { /* Controls Overlay (Text Cell) */}
+                                <div className="absolute top-2 right-2 flex items-center gap-1 z-20 transform transition-all duration-200">
+                                    <button
+                                        onClick={() => onToggleLock(cell.id)}
+                                        className={`p-1.5 rounded-md transition-colors ${cell.isLocked ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                        title={cell.isLocked ? "Unlock cell" : "Lock cell"}
+                                    >
+                                        {cell.isLocked ? <Lock size={13} /> : <Unlock size={13} />}
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(cell.id)}
+                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                                        title="Delete cell"
+                                    >
+                                        <Trash2 size={13} />
+                                    </button>
+                                    <div className="relative" ref={menuRef}>
                                         <button
-                                            onClick={(e) => { e.stopPropagation(); onRun(cell.id); }}
-                                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md transition-colors"
-                                            title="Done editing"
+                                            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+                                            className={`p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors ${isMenuOpen ? 'bg-blue-50 text-blue-500 dark:bg-blue-900/20' : ''}`}
                                         >
-                                            <Check size={14} />
+                                            <MoreVertical size={13} />
                                         </button>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); onDelete(cell.id); }}
-                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-                                            title="Delete block"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
+                                        {isMenuOpen && <CellMenu />}
                                     </div>
                                 </div>
 
@@ -177,7 +290,41 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
                                             onUpdate(cell.id, val);
                                             adjustHeight(e.target);
                                         }}
+                                        readOnly={cell.isLocked}
                                         onKeyDown={(e) => {
+                                            if (cell.isLocked) return;
+
+                                            // Slash Menu Navigation
+                                            if (activeSlashMenuId === cell.id && filteredSlashItems.length > 0) {
+                                                if (e.key === 'ArrowDown') {
+                                                    e.preventDefault();
+                                                    setSlashSelectedIndex((prev) => (prev + 1) % filteredSlashItems.length);
+                                                    return;
+                                                }
+                                                if (e.key === 'ArrowUp') {
+                                                    e.preventDefault();
+                                                    setSlashSelectedIndex((prev) => (prev - 1 + filteredSlashItems.length) % filteredSlashItems.length);
+                                                    return;
+                                                }
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    const block = filteredSlashItems[slashSelectedIndex];
+                                                    const lastSlashIndex = cell.content.lastIndexOf('/');
+                                                    if (lastSlashIndex !== -1) {
+                                                        const newContent = cell.content.substring(0, lastSlashIndex) + block.prefix;
+                                                        onUpdate(cell.id, newContent);
+                                                    }
+                                                    onSlashMenu(null);
+                                                    onSetLastSelectedPrefix(block.prefix);
+                                                    return;
+                                                }
+                                                if (e.key === 'Escape') {
+                                                    e.preventDefault();
+                                                    onSlashMenu(null);
+                                                    return;
+                                                }
+                                            }
+
                                             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                                                 e.preventDefault();
                                                 onSplit(cell.id, e.currentTarget.selectionStart);
@@ -191,9 +338,12 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
 
                                     {/* Dedicated Slash Command Menu */}
                                     {activeSlashMenuId === cell.id && (
-                                        <div className="absolute left-12 top-6 w-48 bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur-sm border border-gray-200 dark:border-[#333] rounded-lg shadow-xl z-[100] animate-in fade-in zoom-in-95 duration-200 slash-command-menu ring-1 ring-black/5 overflow-y-auto subtle-scrollbar min-w-[120px] max-h-48">
+                                        <div
+                                            ref={slashMenuRef}
+                                            className="absolute left-12 top-6 w-48 bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur-sm border border-gray-200 dark:border-[#333] rounded-lg shadow-xl z-[100] animate-in fade-in zoom-in-95 duration-200 slash-command-menu ring-1 ring-black/5 overflow-y-auto subtle-scrollbar min-w-[120px] max-h-48"
+                                        >
                                             <div className="p-1">
-                                                {textBlockTypes.filter(b => b.label.toLowerCase().includes(textSearchQuery.toLowerCase())).map(block => (
+                                                {filteredSlashItems.map((block, i) => (
                                                     <button
                                                         key={block.id}
                                                         onClick={(e) => {
@@ -204,17 +354,17 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
                                                             onSlashMenu(null);
                                                             onSetLastSelectedPrefix(block.prefix);
                                                         }}
-                                                        className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] rounded-md group transition-colors text-left"
+                                                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md group transition-colors text-left ${i === slashSelectedIndex ? 'bg-gray-100 dark:bg-[#333]' : 'hover:bg-gray-100 dark:hover:bg-[#2a2a2a]'}`}
                                                     >
-                                                        <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center bg-gray-50 dark:bg-[#222] border border-gray-200 dark:border-[#333] rounded text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-all font-bold text-[8px] uppercase tracking-tighter">
+                                                        <div className={`w-5 h-5 flex-shrink-0 flex items-center justify-center border rounded transition-all font-bold text-[8px] uppercase tracking-tighter ${i === slashSelectedIndex ? 'bg-gray-200 dark:bg-[#444] border-gray-300 dark:border-[#555] text-gray-700 dark:text-gray-200' : 'bg-gray-50 dark:bg-[#222] border-gray-200 dark:border-[#333] text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200'}`}>
                                                             {block.shortcut}
                                                         </div>
-                                                        <div className="text-[12px] font-medium text-gray-700 dark:text-gray-300 font-sans truncate">
+                                                        <div className={`text-[12px] font-medium font-sans truncate ${i === slashSelectedIndex ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                                                             {block.label}
                                                         </div>
                                                     </button>
                                                 ))}
-                                                {textBlockTypes.filter(b => b.label.toLowerCase().includes(textSearchQuery.toLowerCase())).length === 0 && (
+                                                {filteredSlashItems.length === 0 && (
                                                     <div className="p-2 text-center text-[10px] text-gray-400 italic">No matches</div>
                                                 )}
                                             </div>
@@ -223,7 +373,7 @@ export const NotebookCell: React.FC<NotebookCellProps> = ({
                                 </div>
 
                                 {/* Clean Preview (Vertical) */}
-                                <div className="bg-white dark:bg-[#1e1e1e] p-6 lg:p-8">
+                                <div className="bg-white dark:bg-[#1e1e1e] p-6 lg:p-8 rounded-b-xl">
                                     <div className="prose prose-sm dark:prose-invert max-w-none 
                                         prose-headings:font-bold prose-headings:tracking-tight
                                         prose-p:leading-relaxed prose-p:text-gray-600 dark:prose-p:text-gray-400
